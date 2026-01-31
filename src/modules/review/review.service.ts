@@ -1,13 +1,28 @@
-import { Review } from "../../../generated/prisma/client";
+
 import { prisma } from "../../lib/prisma";
 
-const createReview = async (data: Omit<Review, 'id' | 'createdAt' >) =>{
-    const result = await prisma.review.create({
-        data
-    })
+type CreateReviewInput = {
+  bookingId: string;
+  studentId: string;
+  tutorId: string;
+  rating: number;
+  comment?: string;
+};
 
- return result;
-}
+
+const createReview = async (
+  data: CreateReviewInput,
+  userId: string,
+
+) => {
+  return prisma.review.create({
+    data: {
+      ...data,
+      authorId: userId,
+    },
+  });
+};
+ 
 
 
 export const reviewService ={

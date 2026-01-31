@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Review" ALTER COLUMN "bookingId" DROP NOT NULL,
+ALTER COLUMN "studentId" DROP NOT NULL,
+ALTER COLUMN "tutorId" DROP NOT NULL;
