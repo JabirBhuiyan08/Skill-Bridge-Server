@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(225)
+  description String    @db.Text
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  subject     Subject[]
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  studentId   String
+  tutorId     String
+  subjectId   String
+  startTime   DateTime
+  endTime     DateTime
+  duration    String
+  location    String
+  createdAt   DateTime @default(now())
+  completedAt DateTime @default(now())
+
+  @@index([tutorId])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  bookingId  String
+  studentId  String
+  tutorId    String
+  subjectId  String
+  rating     String
+  comment    String
+  isApproved Boolean
+  createdAt  DateTime @default(now())
+
+  @@index([tutorId])
+}
+
+model Avaiability {
+  id           String   @id @default(uuid())
+  tutorId      String
+  subjectId    String
+  name         String
+  description  String   @db.Text
+  dayOfWeek    String
+  startTime    String
+  endTime      String
+  slotDuration String
+  isActive     Boolean
+  createdAt    DateTime @default(now())
+}
+
+model TutorSubject {
+  id                String   @id @default(uuid())
+  tutorId           String
+  proficiencyLevel  String
+  yearsOfExperience String
+  createdAt         DateTime @default(now())
+}
+
+model Subject {
+  id          String   @id @default(uuid())
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  name        String
+  description String
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  role          UserRole?   @default(STUDENT)
+  phone  String?
+  status String? @default("ACTIVE")
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
