@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 4aa9fd96e32cb61ebc46830746c3700ca148d7fc JabirBhuiyan08 <jabirbhuiyan08@gmail.com> 1768752805 +0600	commit (initial): Initial commit from Create Next App
+4aa9fd96e32cb61ebc46830746c3700ca148d7fc ac19fad35d1282732aaa400d80efea2a0bd36538 JabirBhuiyan08 <jabirbhuiyan08@gmail.com> 1769165422 +0600	commit: first commit
+ac19fad35d1282732aaa400d80efea2a0bd36538 ac19fad35d1282732aaa400d80efea2a0bd36538 JabirBhuiyan08 <jabirbhuiyan08@gmail.com> 1769165422 +0600	Branch: renamed refs/heads/master to refs/heads/main
+ac19fad35d1282732aaa400d80efea2a0bd36538 69e34f6efe3dd2c302b9b5de793495806a0b15cc JabirBhuiyan08 <jabirbhuiyan08@gmail.com> 1769508735 +0600	commit: reload problem
+69e34f6efe3dd2c302b9b5de793495806a0b15cc 005e1a29bece07201c28632ac0cbae2dff365317 JabirBhuiyan08 <jabirbhuiyan08@gmail.com> 1769517532 +0600	commit: problem solved! next js letest version has some problem, using v15 its working properly

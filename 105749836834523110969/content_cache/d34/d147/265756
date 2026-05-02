@@ -1,0 +1,32 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `createAt` on the `comments` table. All the data in the column will be lost.
+  - You are about to drop the column `parantId` on the `comments` table. All the data in the column will be lost.
+  - You are about to alter the column `title` on the `posts` table. The data in that column could be lost. The data in that column will be cast from `VarChar(255)` to `VarChar(225)`.
+
+*/
+-- DropForeignKey
+ALTER TABLE "comments" DROP CONSTRAINT "comments_parantId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "comments" DROP CONSTRAINT "comments_postId_fkey";
+
+-- AlterTable
+ALTER TABLE "comments" DROP COLUMN "createAt",
+DROP COLUMN "parantId",
+ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "parentId" TEXT;
+
+-- AlterTable
+ALTER TABLE "posts" ALTER COLUMN "title" SET DATA TYPE VARCHAR(225);
+
+-- AlterTable
+ALTER TABLE "user" ALTER COLUMN "role" SET DEFAULT 'USER',
+ALTER COLUMN "status" SET DEFAULT 'ACTIVE';
+
+-- AddForeignKey
+ALTER TABLE "comments" ADD CONSTRAINT "comments_postId_fkey" FOREIGN KEY ("postId") REFERENCES "posts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "comments" ADD CONSTRAINT "comments_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "comments"("id") ON DELETE CASCADE ON UPDATE CASCADE;

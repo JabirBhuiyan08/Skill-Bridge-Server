@@ -43,6 +43,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "scripts/fix-imports.js"],
   "exclude": ["node_modules", "dist", "generated/prisma"]
 }

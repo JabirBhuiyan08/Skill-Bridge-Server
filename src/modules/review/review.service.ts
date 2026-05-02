@@ -1,4 +1,3 @@
-
 import { prisma } from "../../lib/prisma";
 
 type CreateReviewInput = {
@@ -9,22 +8,53 @@ type CreateReviewInput = {
   comment?: string;
 };
 
-
 const createReview = async (
   data: CreateReviewInput,
   userId: string,
-
+  userRole: string
 ) => {
-  return prisma.review.create({
-    data: {
-      ...data,
-      authorId: userId,
-    },
-  });
+  // Convert undefined to null for Prisma compatibility
+  const reviewData = {
+    bookingId: data.bookingId,
+    rating: data.rating,
+    comment: data.comment ?? null, // Convert undefined to null
+  };
+
+  // If user is a student, set studentId; if tutor, set tutorId
+  if (userRole === "STUDENT") {
+    return prisma.review.create({
+      data: {
+        ...reviewData,
+        studentId: userId,
+        tutorId: data.tutorId,
+      },
+    });
+  } else if (userRole === "TUTOR") {
+    return prisma.review.create({
+      data: {
+        ...reviewData,
+        tutorId: userId,
+        studentId: data.studentId,
+      },
+    });
+  } else {
+    // Default fallback - treat as student
+    return prisma.review.create({
+      data: {
+        ...reviewData,
+        studentId: userId,
+        tutorId: data.tutorId,
+      },
+    });
+  }
 };
- 
 
+const getAllReview = async () => {
+  const allReview = await prisma.review.findMany();
+  return allReview;
+};
 
-export const reviewService ={
-    createReview
-}
+export const reviewService = {
+  createReview,
+  getAllReview,
+};

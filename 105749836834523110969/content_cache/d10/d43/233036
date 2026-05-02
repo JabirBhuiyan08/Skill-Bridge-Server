@@ -1,0 +1,20 @@
+"use client"
+
+
+import React, { useEffect } from 'react';
+
+const Error = ({error, reset}: {error:Error & {digest?:string}; reset:()=>void}) => {
+
+    useEffect(()=>{
+        console.log(error);
+    },[]);
+
+    return (
+        <div>
+            Something went wrong: Please try again
+            <button onClick={()=> reset()}>Retry</button>
+        </div>
+    );
+};
+
+export default Error;

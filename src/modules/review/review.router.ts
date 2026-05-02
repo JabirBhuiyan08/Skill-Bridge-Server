@@ -4,10 +4,13 @@ import { reviewController } from "./review.controller";
 import auth, { UserRole } from "../../middlewares/auth";
 
 
-
 const router = express.Router();
 
-
+router.get(
+    "/",
+    auth(UserRole.STUDENT, UserRole.TUTOR, UserRole.ADMIN),
+    reviewController.getAllReview
+)
 
 router.post(
     "/", 
