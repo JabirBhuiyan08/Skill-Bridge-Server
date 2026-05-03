@@ -9,11 +9,21 @@ import { availabilityRouter } from "./modules/availability/availability.route";
 import { categoryRouter } from "./modules/categories/category.router";
 import { userRouter } from "./modules/users/users.router";
 import errorHandler from "./middlewares/errorHandler";
+import cookieParser from "cookie-parser";
+import path from "path";
+import qs from "qs";
+
 
 const app: Application = express();
+app.set("query parser", (str: string) => qs.parse(str));
 
+app.set("view engine", "ejs");
+app.set("views", path.resolve(process.cwd(), `src/app/templates`));
+
+
+app.use(cookieParser());
 app.use(cors({
-    origin: process.env.APP_URL || "http://localhost:3000",
+    origin: true, 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
