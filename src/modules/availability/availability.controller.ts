@@ -54,7 +54,7 @@ const createAvailability = catchAsync(
 
     const results = await Promise.all(
       slots.map(async (slot) => {
-        return await availabilityService.createAvailability({ ...slot, tutorId: tutor.id });
+        return await availabilityService.createAvailability({ ...slot, tutorId: userId });
       })
     );
 

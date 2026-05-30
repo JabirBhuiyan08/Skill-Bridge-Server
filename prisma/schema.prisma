@@ -54,6 +54,9 @@ model Availability {
   endTime      String
   slotDuration String
   isActive     Boolean
+  // Pricing: optional amount (float) and currency code (e.g. "usd")
+  priceAmount  Float?
+  currency     String?
   createdAt    DateTime @default(now())
   tutor        User     @relation(fields: [tutorId], references: [id])
   subject      Subject  @relation(fields: [subjectId], references: [id])

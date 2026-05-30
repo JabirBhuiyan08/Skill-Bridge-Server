@@ -19,7 +19,12 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: [process.env.APP_URL!],
+  trustedOrigins: [
+    process.env.FRONTEND_URL,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://assignment4frontend-two.vercel.app",
+  ].filter((origin): origin is string => origin !== undefined && origin !== ""),
   user: {
     additionalFields: {
       role: {

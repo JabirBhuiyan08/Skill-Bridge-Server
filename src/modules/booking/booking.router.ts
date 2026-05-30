@@ -1,24 +1,27 @@
 import express, {Router} from "express"
-import auth, { UserRole } from "../../middlewares/auth"
+import auth, { UserRole, optionalAuth } from "../../middlewares/auth"
 import { bookingController } from "./booking.controller"
 
 const router = express.Router()
 
+// Create booking - requires authentication
 router.post(
     "/",
     auth(UserRole.STUDENT, UserRole.TUTOR, UserRole.ADMIN),
     bookingController.createBooking
 )
 
+// Get all bookings - optional auth (unauthenticated can call, but get limited data)
 router.get(
     "/",
-    auth(UserRole.STUDENT, UserRole.TUTOR, UserRole.ADMIN),
+    optionalAuth(),
     bookingController.getBookings
 )
 
+// Get single booking - optional auth
 router.get(
     "/:id",
-    auth(UserRole.STUDENT, UserRole.TUTOR, UserRole.ADMIN),
+    optionalAuth(),
     bookingController.getSingleBooking
 )
 

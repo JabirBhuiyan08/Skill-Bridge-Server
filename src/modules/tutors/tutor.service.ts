@@ -104,6 +104,8 @@ const updateTutorAvailability = async (tutorId: string, data: {
     startTime: string, 
     endTime: string, 
     slotDuration: string,
+    priceAmount?: number;
+    currency?: string;
     isActive?: boolean 
 }) => {
     // Check if user exists and is a tutor
@@ -177,6 +179,8 @@ const updateTutorAvailability = async (tutorId: string, data: {
                 startTime: data.startTime,
                 endTime: data.endTime,
                 slotDuration: data.slotDuration,
+                priceAmount: data.priceAmount ?? null,
+                currency: data.currency ?? null,
                 isActive: data.isActive ?? true
             }
         });
@@ -192,6 +196,8 @@ const updateTutorAvailability = async (tutorId: string, data: {
                 startTime: data.startTime,
                 endTime: data.endTime,
                 slotDuration: data.slotDuration,
+                priceAmount: data.priceAmount ?? null,
+                currency: data.currency ?? null,
                 isActive: data.isActive ?? true
             }
         });

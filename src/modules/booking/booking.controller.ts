@@ -39,9 +39,12 @@ const getBookings = async (
 ) => {
   try {
     const user = req.user;
+    
+    // If user is not authenticated, return empty array
     if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(200).json([]);
     }
+    
     const bookings = await bookingService.getBookings(user.id);
     res.status(200).json(bookings);
   } catch (error) {
@@ -56,13 +59,17 @@ const getSingleBooking = async (
 ) => {
   try {
     const user = req.user;
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
     const { id } = req.params;
+    
     if (!id || typeof id !== 'string') {
       return res.status(400).json({ error: "Invalid booking ID" });
     }
+    
+    // If user is not authenticated, return 401
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized to view booking details" });
+    }
+    
     const booking = await bookingService.getSingleBooking(id, user.id);
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });

@@ -47,14 +47,21 @@ const resolveTutorId = async (tutorIdOrUserId: string): Promise<string> => {
     where: { id: tutorIdOrUserId }
   });
   if (tutorById) {
-    return tutorById.id;
+    return tutorById.userId;
   }
 
   const tutorByUserId = await prisma.tutor.findUnique({
     where: { userId: tutorIdOrUserId }
   });
   if (tutorByUserId) {
-    return tutorByUserId.id;
+    return tutorByUserId.userId;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: tutorIdOrUserId }
+  });
+  if (user && user.role === 'TUTOR') {
+    return user.id;
   }
 
   throw new Error(`Tutor not found with id or userId: ${tutorIdOrUserId}`);
@@ -69,6 +76,8 @@ const createAvailability = async (data: {
   startTime: string;
   endTime: string;
   slotDuration: string;
+  priceAmount?: number;
+  currency?: string;
   isActive: boolean;
 }) => {
   const resolvedTutorId = await resolveTutorId(data.tutorId);
@@ -86,6 +95,8 @@ const createAvailability = async (data: {
       startTime: data.startTime,
       endTime: data.endTime,
       slotDuration: data.slotDuration,
+      priceAmount: data.priceAmount ?? null,
+      currency: data.currency ?? null,
       isActive: data.isActive,
     },
   });
@@ -136,6 +147,8 @@ const updateAvailability = async (
     startTime?: string;
     endTime?: string;
     slotDuration?: string;
+    priceAmount?: number;
+    currency?: string;
     isActive?: boolean;
   }
 ) => {
@@ -145,9 +158,9 @@ const updateAvailability = async (
     updateData.subjectId = await resolveSubjectId(data.subjectId);
   }
 
-  // If tutorId is being updated, validate that the new tutor exists
+  // If tutorId is being updated, resolve it to the underlying user ID
   if (data.tutorId) {
-    await resolveTutorId(data.tutorId);
+    updateData.tutorId = await resolveTutorId(data.tutorId);
   }
 
   const result = await prisma.availability.update({
