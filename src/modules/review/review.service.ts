@@ -49,8 +49,34 @@ const createReview = async (
   }
 };
 
-const getAllReview = async () => {
-  const allReview = await prisma.review.findMany();
+const getAllReview = async (filters?: { isApproved?: boolean; limit?: number }) => {
+  const where: any = {};
+  
+  if (filters?.isApproved !== undefined) {
+    where.isApproved = filters.isApproved;
+  }
+
+  const allReview = await prisma.review.findMany({
+    where,
+    take: filters?.limit,
+    orderBy: {
+      createdAt: 'desc'
+    },
+    include: {
+      student: {
+        select: {
+          name: true,
+          email: true
+        }
+      },
+      tutor: {
+        select: {
+          name: true
+        }
+      }
+    }
+  });
+  
   return allReview;
 };
 

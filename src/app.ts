@@ -8,6 +8,7 @@ import { tutorRouter } from "./modules/tutors/tutor.router";
 import { availabilityRouter } from "./modules/availability/availability.route";
 import { categoryRouter } from "./modules/categories/category.router";
 import { userRouter } from "./modules/users/users.router";
+import { statsRouter } from "./modules/users/stats.router";
 import { paymentRouter } from "./modules/payments/payments.route";
 import errorHandler from "./middlewares/errorHandler";
 import cookieParser from "cookie-parser";
@@ -67,6 +68,7 @@ app.use("/api/booking", bookingRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/users", userRouter);
+app.use("/api/stats", statsRouter);
 app.use("/api/payments", paymentRouter);
 
 

@@ -18,11 +18,24 @@ const createReview = async (req: Request, res: Response, next:NextFunction) => {
 
 const getAllReview = async(req: Request, res: Response) =>{
     try{
-        const result = await reviewService.getAllReview()
-        res.status(200).json(result)
+        const isApproved = req.query.isApproved === 'true';
+        const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+        
+        const filters: { isApproved?: boolean; limit?: number } = {};
+        
+        if (req.query.isApproved !== undefined) {
+            filters.isApproved = isApproved;
+        }
+        
+        if (limit) {
+            filters.limit = limit;
+        }
+        
+        const result = await reviewService.getAllReview(filters);
+        res.status(200).json(result);
     }catch(e){
         res.status(400).json({
-            error: "Post Creation failed",
+            error: "Failed to fetch reviews",
             details: e
         })
     }

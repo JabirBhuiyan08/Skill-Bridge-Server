@@ -24,50 +24,137 @@ const getAllTutors = async (filters?: { category?: string; minRating?: number; s
 
     const users = await prisma.user.findMany({
         where,
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            status: true,
-            createdAt: true,
-            updatedAt: true,
+        include: {
+            tutor: {
+                include: {
+                    tutorSubjects: {
+                        include: {
+                            subject: {
+                                include: {
+                                    category: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            availabilities: {
+                include: {
+                    subject: true
+                }
+            },
+            receivedReviews: {
+                where: {
+                    isApproved: true
+                },
+                select: {
+                    rating: true
+                }
+            }
         }
     });
 
-    // Map to simple tutor format
-    return users.map(u => ({
-        id: u.id,
-        userId: u.id,
-        name: u.name,
-        email: u.email,
-        bio: "",
-        tutorSubjects: [],
-        availabilities: [],
-        averageRating: 0,
-        reviewCount: 0
-    }));
+    // Map to tutor format with real data
+    return users.map(u => {
+        const reviews = u.receivedReviews || [];
+        const averageRating = reviews.length > 0 
+            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length 
+            : 0;
+
+        return {
+            id: u.id,
+            userId: u.id,
+            name: u.name,
+            email: u.email,
+            bio: u.tutor?.bio || "",
+            tutorSubjects: u.tutor?.tutorSubjects.map(ts => ({
+                id: ts.id,
+                subject: {
+                    id: ts.subject.id,
+                    name: ts.subject.name,
+                    description: ts.subject.description,
+                    category: ts.subject.category
+                },
+                proficiencyLevel: ts.proficiencyLevel,
+                yearsOfExperience: ts.yearsOfExperience
+            })) || [],
+            availabilities: u.availabilities || [],
+            averageRating: Math.round(averageRating * 10) / 10,
+            reviewCount: reviews.length
+        };
+    });
 }
 
 const getSingleTutor = async (id: string) => {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
         where: { id: id, role: "TUTOR" },
+        include: {
+            tutor: {
+                include: {
+                    tutorSubjects: {
+                        include: {
+                            subject: {
+                                include: {
+                                    category: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            availabilities: {
+                include: {
+                    subject: true
+                }
+            },
+            receivedReviews: {
+                where: {
+                    isApproved: true
+                },
+                select: {
+                    rating: true,
+                    comment: true,
+                    createdAt: true,
+                    student: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            }
+        }
     });
     
     if (!user) {
         throw new Error("Tutor not found");
     }
+
+    const reviews = user.receivedReviews || [];
+    const averageRating = reviews.length > 0 
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length 
+        : 0;
     
     return {
         id: user.id,
         userId: user.id,
         name: user.name,
         email: user.email,
-        bio: "",
-        tutorSubjects: [],
-        availabilities: [],
-        averageRating: 0,
-        reviewCount: 0
+        bio: user.tutor?.bio || "",
+        tutorSubjects: user.tutor?.tutorSubjects.map(ts => ({
+            id: ts.id,
+            subject: {
+                id: ts.subject.id,
+                name: ts.subject.name,
+                description: ts.subject.description,
+                category: ts.subject.category
+            },
+            proficiencyLevel: ts.proficiencyLevel,
+            yearsOfExperience: ts.yearsOfExperience
+        })) || [],
+        availabilities: user.availabilities || [],
+        averageRating: Math.round(averageRating * 10) / 10,
+        reviewCount: reviews.length,
+        reviews: reviews
     };
 }
 
